@@ -715,6 +715,7 @@ def register_routes(app):
                 'plan_id': plan_id,
                 'customer_notify': 1,
                 'quantity': 1,
+                'total_count': 120 if plan == 'monthly' else 10,  # 10 years for yearly, 10 years for monthly
                 'notes': {
                     'centre_id': current_user.id,
                     'centre_name': current_user.name,
