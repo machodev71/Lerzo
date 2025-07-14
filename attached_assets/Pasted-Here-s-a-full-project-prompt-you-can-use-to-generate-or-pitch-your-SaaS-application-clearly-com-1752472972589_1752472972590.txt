@@ -1,0 +1,103 @@
+Here’s a full project **prompt** you can use to generate or pitch your SaaS application clearly, combining all the powerful ideas you’ve shared. This is perfect for describing your software vision to a developer, teammate, or even when asking AI tools to help generate the code or UI:
+
+---
+
+### 🔧 **Prompt for Your SaaS Student Management Software (Django + Tailwind + PostgreSQL)**
+
+> Build a full-stack **SaaS-based student management application** using **Django**, **PostgreSQL**, **HTML Django templates**, and **Tailwind CSS**. The app is designed for **computer coaching centres** to manage student records, fee tracking, course enrollments, and enquiry leads.
+
+---
+
+### 🧠 **Core Requirements**
+
+1. **User Roles**:
+
+   * Each centre has their own admin panel
+   * Centres can register and manage their own data independently (SaaS)
+   * Admin login to manage students (joined and enquiry)
+
+2. **Student Types**:
+
+   * **Joined Students** (Full record: fees, joining date, scheme, course)
+   * **Enquiry Students** (Leads who enquired but didn’t join)
+
+3. **Student Details for Joined**:
+
+   * Enrollment Number (manual or auto-generated using date-time format)
+   * Name, Father's Name, Sex, Age, DOB, Date of Joining
+   * Course, Total Fees, Net Fees, Concession, Scheme
+   * Mobile 1\*, Mobile 2, Address (Line 1, Line 2), City, Pincode
+   * Qualification, Bill Number
+
+4. **Enquiry Student Details**:
+
+   * Name, Father’s Name, Mobile 1, Mobile 2, Address, Pincode
+   * Employment Status, Sex, Qualification
+   * Course Interested, Reason for Interest, Joining Plan
+   * Source of Information, Scheme
+
+---
+
+### 💰 **SaaS Subscription Logic**
+
+* 14-Day Free Trial
+* ₹699/month OR ₹6999/year plan
+* After trial expiry, restrict access to everything except the **payment page**
+* Use session/middleware to check trial/subscription validity on every request
+* Show subscription status in dashboard header
+
+---
+
+### 🎨 UI/UX Features
+
+* Built using **Tailwind CSS**
+* **Dark Mode Toggle**
+* All input fields should auto-convert to **UPPERCASE** on typing
+* Allow centres to **upload their own logo**
+* Separate dashboards for:
+
+  * Total Students
+  * Joined / Not Joined / Incomplete Fee Students
+  * Export options: Excel and PDF (customizable fields)
+
+---
+
+### 📥 Data Management & Features
+
+* Unique Student ID generation using datetime if not manually entered
+* Fee record system:
+
+  * Record partial/full payments
+  * Calculate balance fees
+  * View full payment history
+* Convert Enquiry to Joined easily
+* Custom course list per coaching centre
+* CRUD for courses, schemes, students
+
+---
+
+### 📈 Future Features (Just keep space/hooks)
+
+* WhatsApp/SMS integration to message students/leads
+* Filter/Search for:
+
+  * By course, date, fees status, joining status
+* Role-based access for multi-staff login
+* Dashboard charts for reporting
+
+---
+
+### 📂 Tech Stack
+
+* **Backend**: Django
+* **Frontend**: Django Templates + Tailwind CSS
+* **Database**: PostgreSQL
+* **Auth**: Django's inbuilt user auth with centre-based multi-tenant logic
+* **PDF/Excel Export**: Use `xhtml2pdf`/`WeasyPrint` and `pandas`/`openpyxl`
+* Add `dark:` class Tailwind theme switcher
+* Use JS to auto-uppercase in forms: `oninput="this.value=this.value.toUpperCase()"`
+* Payment integration (Razorpay) for subscriptions
+* Protect views with custom middleware to block post-trial users
+* Add joined vs not-joined vs partially paid filter tabs in dashboard 
+* `subscriptions/` (trial + payment logic) using razorpay
+
