@@ -517,7 +517,42 @@ def register_routes(app):
         
         return render_template('courses/add.html', form=form)
     
-    # Scheme Routes (similar to courses)
+    @app.route('/courses/<int:id>/edit', methods=['GET', 'POST'])
+    @login_required
+    @subscription_required
+    def courses_edit(id):
+        course = Course.query.filter_by(id=id, centre_id=current_user.id).first_or_404()
+        form = CourseForm(obj=course)
+        
+        if form.validate_on_submit():
+            course.name = form.name.data.upper()
+            course.description = form.description.data
+            course.duration_months = form.duration_months.data
+            course.fees = form.fees.data or 0
+            
+            db.session.commit()
+            flash('Course updated successfully', 'success')
+            return redirect(url_for('courses_list'))
+        
+        return render_template('courses/edit.html', form=form, course=course)
+    
+    @app.route('/courses/<int:id>/delete', methods=['POST'])
+    @login_required
+    @subscription_required
+    def courses_delete(id):
+        course = Course.query.filter_by(id=id, centre_id=current_user.id).first_or_404()
+        
+        # Check if course has students
+        if course.students:
+            flash('Cannot delete course as it has enrolled students', 'error')
+            return redirect(url_for('courses_list'))
+            
+        db.session.delete(course)
+        db.session.commit()
+        flash('Course deleted successfully', 'success')
+        return redirect(url_for('courses_list'))
+    
+    # Scheme Routes
     @app.route('/schemes')
     @login_required
     @subscription_required
@@ -546,6 +581,40 @@ def register_routes(app):
             return redirect(url_for('schemes_list'))
         
         return render_template('schemes/add.html', form=form)
+    
+    @app.route('/schemes/<int:id>/edit', methods=['GET', 'POST'])
+    @login_required
+    @subscription_required
+    def schemes_edit(id):
+        scheme = Scheme.query.filter_by(id=id, centre_id=current_user.id).first_or_404()
+        form = SchemeForm(obj=scheme)
+        
+        if form.validate_on_submit():
+            scheme.name = form.name.data.upper()
+            scheme.description = form.description.data
+            scheme.discount_percentage = form.discount_percentage.data or 0
+            
+            db.session.commit()
+            flash('Scheme updated successfully', 'success')
+            return redirect(url_for('schemes_list'))
+        
+        return render_template('schemes/edit.html', form=form, scheme=scheme)
+    
+    @app.route('/schemes/<int:id>/delete', methods=['POST'])
+    @login_required
+    @subscription_required
+    def schemes_delete(id):
+        scheme = Scheme.query.filter_by(id=id, centre_id=current_user.id).first_or_404()
+        
+        # Check if scheme has students
+        if scheme.students:
+            flash('Cannot delete scheme as it has enrolled students', 'error')
+            return redirect(url_for('schemes_list'))
+            
+        db.session.delete(scheme)
+        db.session.commit()
+        flash('Scheme deleted successfully', 'success')
+        return redirect(url_for('schemes_list'))
     
     # Export Routes
     @app.route('/export/options')
