@@ -7,12 +7,13 @@ def subscription_middleware():
     
     # Skip subscription check for certain routes
     exempt_routes = [
-        'auth.login', 
-        'auth.register', 
-        'auth.logout',
-        'subscription.plans',
-        'subscription.payment',
-        'subscription.callback',
+        'auth_login', 
+        'auth_register', 
+        'auth_logout',
+        'subscription_plans',
+        'subscription_payment',
+        'subscription_webhook',
+        'subscription_success',
         'static'
     ]
     
@@ -27,20 +28,20 @@ def subscription_middleware():
     # Check subscription status
     if not current_user.is_subscription_active():
         # Allow access only to subscription pages
-        if not request.endpoint.startswith('subscription.'):
+        if not request.endpoint.startswith('subscription_'):
             flash('Your subscription has expired. Please renew to continue using the service.', 'warning')
-            return redirect(url_for('subscription.plans'))
+            return redirect(url_for('subscription_plans'))
 
 def subscription_required(f):
     """Decorator to require active subscription for specific routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth_login'))
         
         if not current_user.is_subscription_active():
             flash('Active subscription required to access this feature.', 'warning')
-            return redirect(url_for('subscription.plans'))
+            return redirect(url_for('subscription_plans'))
         
         return f(*args, **kwargs)
     return decorated_function

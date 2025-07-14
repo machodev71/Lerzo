@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Invoices - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice me-2"></i>Subscription Invoices</h2>
+    <a href="{{ url_for('settings_logo') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Settings
+    </a>
+</div>
+
+{% if invoices %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Payment History</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Date</th>
+                        <th>Plan Type</th>
+                        <th>Amount</th>
+                        <th>Payment ID</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td>
+                            <strong>INV-{{ '%06d'|format(invoice.id) }}</strong>
+                        </td>
+                        <td>{{ invoice.payment_date.strftime('%d %b %Y') }}</td>
+                        <td>
+                            <span class="badge {% if invoice.plan_type == 'yearly' %}bg-success{% else %}bg-primary{% endif %}">
+                                {{ invoice.plan_type.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>₹{{ "%.2f"|format(invoice.amount) }}</strong>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ invoice.razorpay_payment_id or 'N/A' }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ invoice.status.title() }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('download_invoice', invoice_id=invoice.id) }}" 
+                               class="btn btn-sm btn-outline-primary" 
+                               title="Download Invoice">
+                                <i class="fas fa-download me-1"></i>Download PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Card -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Payment Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="mb-1"><strong>Total Payments:</strong></p>
+                        <h5 class="text-primary">{{ invoices|length }}</h5>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-1"><strong>Total Amount:</strong></p>
+                        <h5 class="text-success">₹{{ "%.2f"|format(invoices|sum(attribute='amount')) }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">Current Subscription</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Status:</strong></p>
+                <h6 class="mb-2">{{ current_user.get_subscription_status() }}</h6>
+                {% if current_user.subscription_end_date %}
+                <p class="mb-1"><strong>Next Renewal:</strong></p>
+                <p class="text-muted">{{ current_user.subscription_end_date.strftime('%d %B %Y') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-file-invoice fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No Invoices Found</h4>
+        <p class="text-muted mb-4">You don't have any subscription payments yet.</p>
+        {% if not current_user.is_subscription_active() %}
+        <a href="{{ url_for('subscription_plans') }}" class="btn btn-primary">
+            <i class="fas fa-credit-card me-2"></i>Subscribe Now
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Help Section -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="fas fa-question-circle me-2"></i>Need Help?
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h6>Download Invoices</h6>
+                <p class="small text-muted">Click the download button to get PDF invoices for your records.</p>
+            </div>
+            <div class="col-md-4">
+                <h6>Payment Support</h6>
+                <p class="small text-muted">For payment issues, contact support with your Payment ID.</p>
+            </div>
+            <div class="col-md-4">
+                <h6>Billing Questions</h6>
+                <p class="small text-muted">Need to update billing info? Contact our support team.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

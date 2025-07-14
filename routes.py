@@ -817,3 +817,38 @@ def register_routes(app):
                 return redirect(url_for('settings_logo'))
         
         return render_template('settings/logo.html', form=form)
+    
+    @app.route('/settings/invoices')
+    @login_required
+    def settings_invoices():
+        """View subscription invoices"""
+        invoices = SubscriptionPayment.query.filter_by(
+            centre_id=current_user.id,
+            status='completed'
+        ).order_by(SubscriptionPayment.payment_date.desc()).all()
+        
+        return render_template('settings/invoices.html', invoices=invoices)
+    
+    @app.route('/settings/invoices/<int:invoice_id>/download')
+    @login_required
+    def download_invoice(invoice_id):
+        """Download invoice PDF"""
+        invoice = SubscriptionPayment.query.filter_by(
+            id=invoice_id,
+            centre_id=current_user.id,
+            status='completed'
+        ).first_or_404()
+        
+        try:
+            from utils import generate_invoice_pdf
+            pdf_file, invoice_number = generate_invoice_pdf(invoice)
+            
+            return send_file(
+                pdf_file,
+                as_attachment=True,
+                download_name=f'{invoice_number}.pdf',
+                mimetype='application/pdf'
+            )
+        except Exception as e:
+            flash(f'Error generating invoice: {str(e)}', 'error')
+            return redirect(url_for('settings_invoices'))

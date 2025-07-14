@@ -157,3 +157,130 @@ def export_students_pdf(students, fields, centre_name):
 def calculate_net_fees(total_fees, concession):
     """Calculate net fees after applying concession"""
     return total_fees - (concession or 0)
+
+def generate_invoice_pdf(subscription_payment):
+    """Generate invoice PDF for subscription payment"""
+    from flask import render_template_string
+    from datetime import datetime
+    import io
+    
+    # Generate invoice number
+    invoice_number = f"INV-{subscription_payment.id:06d}"
+    
+    # Invoice template
+    invoice_template = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Invoice {{ invoice_number }}</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+            .header { text-align: center; border-bottom: 2px solid #0d6efd; padding-bottom: 20px; margin-bottom: 30px; }
+            .company-name { font-size: 24px; font-weight: bold; color: #0d6efd; }
+            .invoice-title { font-size: 20px; margin-top: 10px; }
+            .invoice-details { display: flex; justify-content: space-between; margin-bottom: 30px; }
+            .billing-details, .invoice-info { width: 48%; }
+            .billing-details h4, .invoice-info h4 { margin-bottom: 10px; color: #333; }
+            .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            .table th, .table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+            .table th { background-color: #f8f9fa; font-weight: bold; }
+            .total-section { text-align: right; margin-top: 20px; }
+            .total-amount { font-size: 18px; font-weight: bold; color: #0d6efd; }
+            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
+            .payment-status { display: inline-block; padding: 5px 10px; border-radius: 3px; font-weight: bold; }
+            .status-completed { background-color: #d1e7dd; color: #0f5132; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="company-name">Student Management System</div>
+            <div class="invoice-title">SUBSCRIPTION INVOICE</div>
+        </div>
+        
+        <div class="invoice-details">
+            <div class="billing-details">
+                <h4>Bill To:</h4>
+                <p><strong>{{ centre_name }}</strong></p>
+                <p>{{ centre_email }}</p>
+                {% if centre_phone %}
+                <p>Phone: {{ centre_phone }}</p>
+                {% endif %}
+                {% if centre_address %}
+                <p>{{ centre_address }}</p>
+                {% endif %}
+                {% if centre_city %}
+                <p>{{ centre_city }}{% if centre_pincode %} - {{ centre_pincode }}{% endif %}</p>
+                {% endif %}
+            </div>
+            
+            <div class="invoice-info">
+                <h4>Invoice Details:</h4>
+                <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+                <p><strong>Date:</strong> {{ payment_date }}</p>
+                <p><strong>Payment ID:</strong> {{ payment_id }}</p>
+                <p><strong>Status:</strong> <span class="payment-status status-completed">{{ status.upper() }}</span></p>
+            </div>
+        </div>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Plan Type</th>
+                    <th>Duration</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Student Management System Subscription</td>
+                    <td>{{ plan_type.title() }}</td>
+                    <td>{{ duration }}</td>
+                    <td>₹{{ "%.2f"|format(amount) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="total-section">
+            <p><strong>Subtotal: ₹{{ "%.2f"|format(amount) }}</strong></p>
+            <p><strong>Tax: ₹0.00</strong></p>
+            <p class="total-amount">Total Amount: ₹{{ "%.2f"|format(amount) }}</p>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for your business!</p>
+            <p>This is a computer-generated invoice and does not require a signature.</p>
+            <p>For any queries, please contact support.</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Prepare template data
+    centre = subscription_payment.centre
+    template_data = {
+        'invoice_number': invoice_number,
+        'centre_name': centre.name,
+        'centre_email': centre.email,
+        'centre_phone': centre.phone,
+        'centre_address': centre.address,
+        'centre_city': centre.city,
+        'centre_pincode': centre.pincode,
+        'payment_date': subscription_payment.payment_date.strftime('%d %B %Y'),
+        'payment_id': subscription_payment.razorpay_payment_id,
+        'status': subscription_payment.status,
+        'plan_type': subscription_payment.plan_type,
+        'duration': '1 Month' if subscription_payment.plan_type == 'monthly' else '1 Year',
+        'amount': subscription_payment.amount
+    }
+    
+    # Render template
+    html_content = render_template_string(invoice_template, **template_data)
+    
+    # Generate PDF
+    pdf_file = io.BytesIO()
+    HTML(string=html_content).write_pdf(pdf_file)
+    pdf_file.seek(0)
+    
+    return pdf_file, invoice_number
