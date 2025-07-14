@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Plans - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="text-center mb-5">
+        <h2><i class="fas fa-crown me-2"></i>Choose Your Subscription Plan</h2>
+        <p class="text-muted">Select the perfect plan for your coaching centre</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <!-- Monthly Plan -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h4 class="card-title mb-0">Monthly Plan</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <span class="display-4 fw-bold">₹699</span>
+                        <span class="text-muted">/month</span>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Unlimited Students
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Unlimited Enquiries
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Fee Management
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Data Export (Excel/PDF)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Custom Logo Upload
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Course & Scheme Management
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Monthly Billing
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('subscription_payment', plan='monthly') }}" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-credit-card me-2"></i>Choose Monthly
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yearly Plan -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow border-success">
+                <div class="card-header text-center bg-success text-white position-relative">
+                    <span class="badge bg-warning text-dark position-absolute top-0 start-50 translate-middle px-3 py-2">
+                        Save 17%
+                    </span>
+                    <h4 class="card-title mb-0 mt-3">Yearly Plan</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <span class="display-4 fw-bold">₹6,999</span>
+                        <span class="text-muted">/year</span>
+                        <br>
+                        <small class="text-success">
+                            <del class="text-muted">₹8,388</del> Save ₹1,389
+                        </small>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Unlimited Students
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Unlimited Enquiries
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Fee Management
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Data Export (Excel/PDF)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Custom Logo Upload
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Course & Scheme Management
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Priority Support
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            <strong>2 Months FREE!</strong>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('subscription_payment', plan='yearly') }}" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-credit-card me-2"></i>Choose Yearly
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Subscription Status -->
+    {% if current_user.is_authenticated %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h5 class="card-title mb-0">Current Subscription Status</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h4 class="mb-3">{{ current_user.get_subscription_status() }}</h4>
+                    
+                    {% if current_user.subscription_type == 'trial' %}
+                        {% set days_left = (current_user.trial_end_date - moment().utcnow()).days %}
+                        <p class="text-muted">
+                            Your trial expires on {{ current_user.trial_end_date.strftime('%d %B %Y') }}
+                        </p>
+                        {% if days_left <= 3 %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Your trial is ending soon. Subscribe now to continue using all features.
+                        </div>
+                        {% endif %}
+                    {% elif current_user.subscription_end_date %}
+                        <p class="text-muted">
+                            Your subscription renews on {{ current_user.subscription_end_date.strftime('%d %B %Y') }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Features Comparison -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h5 class="card-title mb-0">Why Choose Our Student Management System?</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-shield-alt text-primary me-2"></i>
+                                    Secure & Reliable
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-mobile-alt text-primary me-2"></i>
+                                    Mobile Responsive
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-cloud text-primary me-2"></i>
+                                    Cloud-based Access
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-headset text-primary me-2"></i>
+                                    24/7 Support
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-sync text-primary me-2"></i>
+                                    Regular Updates
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-backup text-primary me-2"></i>
+                                    Data Backup
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-chart-line text-primary me-2"></i>
+                                    Analytics & Reports
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-lock text-primary me-2"></i>
+                                    Data Privacy
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

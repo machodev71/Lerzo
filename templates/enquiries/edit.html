@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Enquiry - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-edit me-2"></i>Edit Enquiry</h2>
+    <div class="d-flex gap-2">
+        {% if enquiry.status == 'active' %}
+        <form method="POST" action="{{ url_for('enquiries_convert', id=enquiry.id) }}" class="d-inline">
+            <button type="submit" class="btn btn-success"
+                    onclick="return confirm('Convert this enquiry to student?')">
+                <i class="fas fa-user-check me-1"></i>Convert to Student
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('enquiries_list') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Enquiries
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <!-- Basic Information -->
+            <h5 class="mb-3"><i class="fas fa-user me-2"></i>Basic Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control uppercase-input") }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.father_name.label(class="form-label") }}
+                    {{ form.father_name(class="form-control uppercase-input") }}
+                    {% if form.father_name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.father_name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.sex.label(class="form-label") }}
+                    {{ form.sex(class="form-select") }}
+                    {% if form.sex.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.sex.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Contact Information -->
+            <h5 class="mb-3"><i class="fas fa-phone me-2"></i>Contact Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.mobile1.label(class="form-label") }}
+                    {{ form.mobile1(class="form-control") }}
+                    {% if form.mobile1.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.mobile1.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.mobile2.label(class="form-label") }}
+                    {{ form.mobile2(class="form-control") }}
+                    {% if form.mobile2.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.mobile2.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(class="form-control uppercase-input", rows="3") }}
+                    {% if form.address.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.address.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.pincode.label(class="form-label") }}
+                    {{ form.pincode(class="form-control") }}
+                    {% if form.pincode.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.pincode.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Academic & Interest Information -->
+            <h5 class="mb-3"><i class="fas fa-graduation-cap me-2"></i>Academic & Interest Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.employment_status.label(class="form-label") }}
+                    {{ form.employment_status(class="form-control uppercase-input") }}
+                    {% if form.employment_status.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.employment_status.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.qualification.label(class="form-label") }}
+                    {{ form.qualification(class="form-control uppercase-input") }}
+                    {% if form.qualification.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.qualification.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.course_interested_id.label(class="form-label") }}
+                    {{ form.course_interested_id(class="form-select") }}
+                    {% if form.course_interested_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.course_interested_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.scheme_id.label(class="form-label") }}
+                    {{ form.scheme_id(class="form-select") }}
+                    {% if form.scheme_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.scheme_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.reason_for_interest.label(class="form-label") }}
+                {{ form.reason_for_interest(class="form-control", rows="3") }}
+                {% if form.reason_for_interest.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.reason_for_interest.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.joining_plan.label(class="form-label") }}
+                    {{ form.joining_plan(class="form-control uppercase-input") }}
+                    {% if form.joining_plan.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.joining_plan.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.source_of_information.label(class="form-label") }}
+                    {{ form.source_of_information(class="form-control uppercase-input") }}
+                    {% if form.source_of_information.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.source_of_information.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('enquiries_list') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>Update Enquiry
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

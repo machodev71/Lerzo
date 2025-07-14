@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-edit me-2"></i>Edit Student</h2>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('students_view', id=student.id) }}" class="btn btn-outline-primary">
+            <i class="fas fa-eye me-1"></i>View Student
+        </a>
+        <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Students
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <!-- Basic Information -->
+            <h5 class="mb-3"><i class="fas fa-user me-2"></i>Basic Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.enrollment_number.label(class="form-label") }}
+                    {{ form.enrollment_number(class="form-control uppercase-input") }}
+                    {% if form.enrollment_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.enrollment_number.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control uppercase-input") }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.father_name.label(class="form-label") }}
+                    {{ form.father_name(class="form-control uppercase-input") }}
+                    {% if form.father_name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.father_name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    {{ form.sex.label(class="form-label") }}
+                    {{ form.sex(class="form-select") }}
+                    {% if form.sex.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.sex.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    {{ form.age.label(class="form-label") }}
+                    {{ form.age(class="form-control") }}
+                    {% if form.age.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.age.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    {{ form.date_of_birth.label(class="form-label") }}
+                    {{ form.date_of_birth(class="form-control") }}
+                    {% if form.date_of_birth.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.date_of_birth.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    {{ form.date_of_joining.label(class="form-label") }}
+                    {{ form.date_of_joining(class="form-control") }}
+                    {% if form.date_of_joining.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.date_of_joining.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Contact Information -->
+            <h5 class="mb-3"><i class="fas fa-phone me-2"></i>Contact Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.mobile1.label(class="form-label") }}
+                    {{ form.mobile1(class="form-control") }}
+                    {% if form.mobile1.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.mobile1.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.mobile2.label(class="form-label") }}
+                    {{ form.mobile2(class="form-control") }}
+                    {% if form.mobile2.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.mobile2.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.address_line1.label(class="form-label") }}
+                    {{ form.address_line1(class="form-control uppercase-input") }}
+                    {% if form.address_line1.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.address_line1.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.address_line2.label(class="form-label") }}
+                    {{ form.address_line2(class="form-control uppercase-input") }}
+                    {% if form.address_line2.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.address_line2.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.city.label(class="form-label") }}
+                    {{ form.city(class="form-control uppercase-input") }}
+                    {% if form.city.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.city.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.pincode.label(class="form-label") }}
+                    {{ form.pincode(class="form-control") }}
+                    {% if form.pincode.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.pincode.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Academic Information -->
+            <h5 class="mb-3"><i class="fas fa-graduation-cap me-2"></i>Academic Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.qualification.label(class="form-label") }}
+                    {{ form.qualification(class="form-control uppercase-input") }}
+                    {% if form.qualification.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.qualification.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.course_id.label(class="form-label") }}
+                    {{ form.course_id(class="form-select") }}
+                    {% if form.course_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.course_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.scheme_id.label(class="form-label") }}
+                    {{ form.scheme_id(class="form-select") }}
+                    {% if form.scheme_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.scheme_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Fee Information -->
+            <h5 class="mb-3"><i class="fas fa-rupee-sign me-2"></i>Fee Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.total_fees.label(class="form-label") }}
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        {{ form.total_fees(class="form-control", id="totalFees") }}
+                    </div>
+                    {% if form.total_fees.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.total_fees.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.concession.label(class="form-label") }}
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        {{ form.concession(class="form-control", id="concession") }}
+                    </div>
+                    {% if form.concession.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.concession.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Net Fees</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="text" class="form-control" id="netFees" readonly>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.bill_number.label(class="form-label") }}
+                    {{ form.bill_number(class="form-control") }}
+                    {% if form.bill_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.bill_number.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('students_view', id=student.id) }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>Update Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function calculateNetFees() {
+    const totalFees = parseFloat(document.getElementById('totalFees').value) || 0;
+    const concession = parseFloat(document.getElementById('concession').value) || 0;
+    const netFees = totalFees - concession;
+    document.getElementById('netFees').value = netFees.toFixed(2);
+}
+
+document.getElementById('totalFees').addEventListener('input', calculateNetFees);
+document.getElementById('concession').addEventListener('input', calculateNetFees);
+
+// Calculate on page load
+calculateNetFees();
+</script>
+{% endblock %}

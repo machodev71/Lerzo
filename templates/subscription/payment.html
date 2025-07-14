@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h4 class="card-title mb-0">Complete Your Payment</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Plan Summary -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ plan.title() }} Plan
+                                        {% if plan == 'yearly' %}
+                                            <span class="badge bg-success ms-2">Save 17%</span>
+                                        {% endif %}
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="mb-1"><strong>Amount:</strong></p>
+                                            <h4 class="text-primary">₹{{ amount }}</h4>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="mb-1"><strong>Billing:</strong></p>
+                                            <p class="mb-0">{{ 'Yearly' if plan == 'yearly' else 'Monthly' }}</p>
+                                        </div>
+                                    </div>
+                                    {% if plan == 'yearly' %}
+                                    <div class="mt-2">
+                                        <small class="text-success">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            You save ₹1,389 compared to monthly billing!
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Form -->
+                    <form id="paymentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card border-primary">
+                                        <div class="card-body text-center">
+                                            <i class="fab fa-cc-visa fa-2x text-primary me-2"></i>
+                                            <i class="fab fa-cc-mastercard fa-2x text-warning me-2"></i>
+                                            <i class="fas fa-university fa-2x text-success me-2"></i>
+                                            <i class="fas fa-mobile-alt fa-2x text-info"></i>
+                                            <p class="mt-2 mb-0">Secure payment via Razorpay</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Terms and Conditions -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                <label class="form-check-label" for="agreeTerms">
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and 
+                                    <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="button" id="payButton" class="btn btn-primary btn-lg">
+                                <i class="fas fa-lock me-2"></i>
+                                Pay ₹{{ amount }} Securely
+                            </button>
+                            <a href="{{ url_for('subscription_plans') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to Plans
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Security Notice -->
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Your payment information is encrypted and secure. We do not store your card details.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.getElementById('payButton').onclick = function(e) {
+    e.preventDefault();
+    
+    // Check if terms are agreed
+    if (!document.getElementById('agreeTerms').checked) {
+        alert('Please agree to the terms and conditions');
+        return;
+    }
+    
+    var options = {
+        "key": "{{ razorpay_key_id or 'rzp_test_1DP5mmOlF5G5ag' }}", // Demo key
+        "amount": {{ amount * 100 }}, // Amount in paise
+        "currency": "INR",
+        "name": "Student Management System",
+        "description": "{{ plan.title() }} Plan Subscription",
+        "order_id": "{{ order_id }}",
+        "handler": function (response) {
+            // On successful payment
+            window.location.href = "{{ url_for('subscription_success', plan=plan) }}" + 
+                                 "?payment_id=" + response.razorpay_payment_id + 
+                                 "&order_id=" + response.razorpay_order_id + 
+                                 "&signature=" + response.razorpay_signature;
+        },
+        "prefill": {
+            "name": "{{ current_user.name }}",
+            "email": "{{ current_user.email }}",
+            "contact": "{{ current_user.phone or '' }}"
+        },
+        "theme": {
+            "color": "#0d6efd"
+        },
+        "modal": {
+            "ondismiss": function() {
+                // Payment cancelled
+                console.log('Payment cancelled');
+            }
+        }
+    };
+    
+    var rzp = new Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+        alert('Payment failed: ' + response.error.description);
+    });
+    
+    rzp.open();
+};
+</script>
+{% endblock %}

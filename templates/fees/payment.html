@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Record Payment - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-rupee-sign me-2"></i>Record Fee Payment</h2>
+    <a href="{{ url_for('students_view', id=student.id) }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Student
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Payment Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.amount.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.amount(class="form-control", max=student.get_balance_fees()) }}
+                            </div>
+                            {% if form.amount.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.amount.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Maximum: ₹{{ "%.2f"|format(student.get_balance_fees()) }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form.payment_date.label(class="form-label") }}
+                            {{ form.payment_date(class="form-control") }}
+                            {% if form.payment_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.payment_date.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.payment_method.label(class="form-label") }}
+                            {{ form.payment_method(class="form-select") }}
+                            {% if form.payment_method.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.payment_method.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            {{ form.receipt_number.label(class="form-label") }}
+                            {{ form.receipt_number(class="form-control", placeholder="Optional") }}
+                            {% if form.receipt_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.receipt_number.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.notes.label(class="form-label") }}
+                        {{ form.notes(class="form-control", rows="3", placeholder="Any additional notes...") }}
+                        {% if form.notes.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.notes.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('students_view', id=student.id) }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Record Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Student Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Student Details</h5>
+            </div>
+            <div class="card-body">
+                <h6><strong>{{ student.name }}</strong></h6>
+                <p class="text-muted mb-2">{{ student.enrollment_number }}</p>
+                <p class="mb-2"><strong>Course:</strong> {{ student.course.name if student.course else '-' }}</p>
+                <p class="mb-0"><strong>Mobile:</strong> {{ student.mobile1 }}</p>
+            </div>
+        </div>
+        
+        <!-- Fee Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Fee Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded">
+                            <h6 class="text-muted mb-1">Total Fees</h6>
+                            <h5 class="mb-0">₹{{ "%.2f"|format(student.total_fees) }}</h5>
+                        </div>
+                    </div>
+                    
+                    {% if student.concession > 0 %}
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded bg-light-info">
+                            <h6 class="text-muted mb-1">Concession</h6>
+                            <h5 class="mb-0 text-info">₹{{ "%.2f"|format(student.concession) }}</h5>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded">
+                            <h6 class="text-muted mb-1">Net Fees</h6>
+                            <h5 class="mb-0">₹{{ "%.2f"|format(student.net_fees) }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded bg-light-success">
+                            <h6 class="text-muted mb-1">Paid So Far</h6>
+                            <h5 class="mb-0 text-success">₹{{ "%.2f"|format(student.get_total_paid()) }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="p-3 border rounded bg-light-warning">
+                            <h6 class="text-muted mb-1">Balance Due</h6>
+                            <h4 class="mb-0 text-warning">₹{{ "%.2f"|format(student.get_balance_fees()) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

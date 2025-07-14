@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Courses - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-book me-2"></i>Courses</h2>
+    <a href="{{ url_for('courses_add') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add Course
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if courses %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Description</th>
+                            <th>Duration (Months)</th>
+                            <th>Fees</th>
+                            <th>Status</th>
+                            <th>Students Enrolled</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td><strong>{{ course.name }}</strong></td>
+                            <td>{{ course.description[:50] + '...' if course.description and course.description|length > 50 else (course.description or '-') }}</td>
+                            <td>{{ course.duration_months or '-' }}</td>
+                            <td>₹{{ "%.2f"|format(course.fees) if course.fees else '-' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if course.is_active else 'secondary' }}">
+                                    {{ 'Active' if course.is_active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>{{ course.students|length }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('courses_edit', id=course.id) }}" class="btn btn-outline-warning" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('courses_delete', id=course.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger" title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this course?')"
+                                                {{ 'disabled' if course.students|length > 0 else '' }}>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No courses found</h5>
+                <p class="text-muted">Add your first course to get started</p>
+                <a href="{{ url_for('courses_add') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Course
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

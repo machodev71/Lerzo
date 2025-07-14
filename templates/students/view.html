@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }} - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user me-2"></i>{{ student.name }}</h2>
+    <div class="d-flex gap-2">
+        {% if student.get_balance_fees() > 0 %}
+        <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-success">
+            <i class="fas fa-rupee-sign me-1"></i>Pay Fees
+        </a>
+        {% endif %}
+        <a href="{{ url_for('students_edit', id=student.id) }}" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i>Edit
+        </a>
+        <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Students
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Student Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-user me-2"></i>Student Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Enrollment Number:</th>
+                                <td>{{ student.enrollment_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ student.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Father's Name:</th>
+                                <td>{{ student.father_name or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sex:</th>
+                                <td>{{ student.sex or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Age:</th>
+                                <td>{{ student.age or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date of Birth:</th>
+                                <td>{{ student.date_of_birth.strftime('%d/%m/%Y') if student.date_of_birth else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date of Joining:</th>
+                                <td>{{ student.date_of_joining.strftime('%d/%m/%Y') if student.date_of_joining else '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Mobile 1:</th>
+                                <td>{{ student.mobile1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>Mobile 2:</th>
+                                <td>{{ student.mobile2 or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Address:</th>
+                                <td>
+                                    {{ student.address_line1 or '' }}
+                                    {% if student.address_line2 %}<br>{{ student.address_line2 }}{% endif %}
+                                    {% if student.city %}<br>{{ student.city }}{% endif %}
+                                    {% if student.pincode %} - {{ student.pincode }}{% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Qualification:</th>
+                                <td>{{ student.qualification or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Course:</th>
+                                <td>{{ student.course.name if student.course else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Scheme:</th>
+                                <td>{{ student.scheme.name if student.scheme else '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Bill Number:</th>
+                                <td>{{ student.bill_number or '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Payment History -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="fas fa-history me-2"></i>Payment History</h5>
+                {% if student.get_balance_fees() > 0 %}
+                <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Payment
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if fee_payments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Receipt No.</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in fee_payments %}
+                                <tr>
+                                    <td>{{ payment.payment_date.strftime('%d/%m/%Y') }}</td>
+                                    <td>₹{{ "%.2f"|format(payment.amount) }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ payment.payment_method }}</span>
+                                    </td>
+                                    <td>{{ payment.receipt_number or '-' }}</td>
+                                    <td>{{ payment.notes or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No payments recorded yet</h6>
+                        {% if student.get_balance_fees() > 0 %}
+                        <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Record First Payment
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Fee Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-rupee-sign me-2"></i>Fee Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded">
+                            <h6 class="text-muted mb-1">Total Fees</h6>
+                            <h4 class="mb-0">₹{{ "%.2f"|format(student.total_fees) }}</h4>
+                        </div>
+                    </div>
+                    {% if student.concession > 0 %}
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded bg-light-info">
+                            <h6 class="text-muted mb-1">Concession</h6>
+                            <h4 class="mb-0 text-info">₹{{ "%.2f"|format(student.concession) }}</h4>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded">
+                            <h6 class="text-muted mb-1">Net Fees</h6>
+                            <h4 class="mb-0">₹{{ "%.2f"|format(student.net_fees) }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="p-3 border rounded bg-light-success">
+                            <h6 class="text-muted mb-1">Paid Amount</h6>
+                            <h4 class="mb-0 text-success">₹{{ "%.2f"|format(student.get_total_paid()) }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        {% set balance = student.get_balance_fees() %}
+                        <div class="p-3 border rounded bg-light-{{ 'success' if balance <= 0 else 'danger' }}">
+                            <h6 class="text-muted mb-1">Balance</h6>
+                            <h4 class="mb-0 text-{{ 'success' if balance <= 0 else 'danger' }}">
+                                ₹{{ "%.2f"|format(balance) }}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fee Status Badge -->
+                <div class="text-center mt-3">
+                    {% set status = student.get_fee_status() %}
+                    <span class="badge bg-{{ 'success' if status == 'Paid' else 'warning' if status == 'Partial' else 'danger' }} fs-6">
+                        {{ status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if student.get_balance_fees() > 0 %}
+                    <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-success">
+                        <i class="fas fa-rupee-sign me-1"></i>Record Payment
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('students_edit', id=student.id) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>Edit Student
+                    </a>
+                    <form method="POST" action="{{ url_for('students_delete', id=student.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger w-100"
+                                onclick="return confirm('Are you sure you want to delete this student? This action cannot be undone.')">
+                            <i class="fas fa-trash me-1"></i>Delete Student
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

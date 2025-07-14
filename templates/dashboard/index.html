@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('students_add') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-1"></i>Add Student
+        </a>
+        <a href="{{ url_for('enquiries_add') }}" class="btn btn-outline-primary">
+            <i class="fas fa-user-plus me-1"></i>Add Enquiry
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Students</h6>
+                        <h3 class="mb-0">{{ total_students }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Total Enquiries</h6>
+                        <h3 class="mb-0">{{ total_enquiries }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-plus fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Fees Collected</h6>
+                        <h3 class="mb-0">₹{{ "%.2f"|format(total_fees_collected) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-rupee-sign fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Pending Fees</h6>
+                        <h3 class="mb-0">₹{{ "%.2f"|format(pending_fees) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fee Status Chart -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Fee Status Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-light-success">
+                            <h4 class="text-success">{{ fully_paid }}</h4>
+                            <p class="mb-0">Fully Paid</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-light-warning">
+                            <h4 class="text-warning">{{ partially_paid }}</h4>
+                            <p class="mb-0">Partially Paid</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded bg-light-danger">
+                            <h4 class="text-danger">{{ unpaid }}</h4>
+                            <p class="mb-0">Unpaid</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('students_list', fee_status='unpaid') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>View Unpaid Students
+                    </a>
+                    <a href="{{ url_for('students_list', fee_status='partial') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-clock me-1"></i>View Partial Payments
+                    </a>
+                    <a href="{{ url_for('export_options') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>Export Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Students and Enquiries -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Students</h5>
+                <a href="{{ url_for('students_list') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_students %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Fee Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in recent_students %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('students_view', id=student.id) }}" class="text-decoration-none">
+                                            {{ student.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ student.course.name if student.course else '-' }}</td>
+                                    <td>
+                                        {% set status = student.get_fee_status() %}
+                                        <span class="badge bg-{{ 'success' if status == 'Paid' else 'warning' if status == 'Partial' else 'danger' }}">
+                                            {{ status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No students added yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Enquiries</h5>
+                <a href="{{ url_for('enquiries_list') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_enquiries %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Mobile</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enquiry in recent_enquiries %}
+                                <tr>
+                                    <td>{{ enquiry.name }}</td>
+                                    <td>{{ enquiry.course_interested.name if enquiry.course_interested else '-' }}</td>
+                                    <td>{{ enquiry.mobile1 }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('enquiries_convert', id=enquiry.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success" 
+                                                    onclick="return confirm('Convert this enquiry to student?')">
+                                                <i class="fas fa-user-check"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No enquiries added yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

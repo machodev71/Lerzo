@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Export Data - Student Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-download me-2"></i>Export Data</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Student Data Export Options</h5>
+            </div>
+            <div class="card-body">
+                <form id="exportForm" method="POST">
+                    <!-- Export Format -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Export Format</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card export-option" data-format="excel">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                                        <h6>Excel Format</h6>
+                                        <p class="text-muted mb-0">Download as .xlsx file</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card export-option" data-format="pdf">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                        <h6>PDF Format</h6>
+                                        <p class="text-muted mb-0">Download as .pdf file</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fee Status Filter -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Filter by Fee Status</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="fee_status" value="all" id="statusAll" checked>
+                                    <label class="form-check-label" for="statusAll">
+                                        All Students
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="fee_status" value="paid" id="statusPaid">
+                                    <label class="form-check-label" for="statusPaid">
+                                        Fully Paid
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="fee_status" value="partial" id="statusPartial">
+                                    <label class="form-check-label" for="statusPartial">
+                                        Partially Paid
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="fee_status" value="unpaid" id="statusUnpaid">
+                                    <label class="form-check-label" for="statusUnpaid">
+                                        Unpaid
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fields Selection -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Select Fields to Export</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="enrollment_number" id="fieldEnrollment" checked>
+                                    <label class="form-check-label" for="fieldEnrollment">
+                                        Enrollment Number
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="name" id="fieldName" checked>
+                                    <label class="form-check-label" for="fieldName">
+                                        Name
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="father_name" id="fieldFatherName">
+                                    <label class="form-check-label" for="fieldFatherName">
+                                        Father's Name
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="mobile1" id="fieldMobile" checked>
+                                    <label class="form-check-label" for="fieldMobile">
+                                        Mobile Number
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="course" id="fieldCourse" checked>
+                                    <label class="form-check-label" for="fieldCourse">
+                                        Course
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="date_of_joining" id="fieldJoiningDate">
+                                    <label class="form-check-label" for="fieldJoiningDate">
+                                        Date of Joining
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="total_fees" id="fieldTotalFees" checked>
+                                    <label class="form-check-label" for="fieldTotalFees">
+                                        Total Fees
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="net_fees" id="fieldNetFees" checked>
+                                    <label class="form-check-label" for="fieldNetFees">
+                                        Net Fees
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="paid_amount" id="fieldPaidAmount" checked>
+                                    <label class="form-check-label" for="fieldPaidAmount">
+                                        Paid Amount
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="balance_fees" id="fieldBalanceFees" checked>
+                                    <label class="form-check-label" for="fieldBalanceFees">
+                                        Balance Fees
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="fields" value="fee_status" id="fieldFeeStatus" checked>
+                                    <label class="form-check-label" for="fieldFeeStatus">
+                                        Fee Status
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Selection Buttons -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllFields()">
+                                Select All
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectNoneFields()">
+                                Select None
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" onclick="selectBasicFields()">
+                                Basic Info Only
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="selectFeeFields()">
+                                Fee Info Only
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Export Buttons -->
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="button" class="btn btn-success btn-lg" id="exportExcel">
+                            <i class="fas fa-file-excel me-2"></i>
+                            Export to Excel
+                        </button>
+                        <button type="button" class="btn btn-danger btn-lg" id="exportPdf">
+                            <i class="fas fa-file-pdf me-2"></i>
+                            Export to PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.export-option {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.export-option:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.export-option.selected {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Field selection functions
+function selectAllFields() {
+    document.querySelectorAll('input[name="fields"]').forEach(cb => cb.checked = true);
+}
+
+function selectNoneFields() {
+    document.querySelectorAll('input[name="fields"]').forEach(cb => cb.checked = false);
+}
+
+function selectBasicFields() {
+    selectNoneFields();
+    ['enrollment_number', 'name', 'father_name', 'mobile1', 'course', 'date_of_joining'].forEach(field => {
+        const checkbox = document.getElementById('field' + field.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)).join(''));
+        if (checkbox) checkbox.checked = true;
+    });
+}
+
+function selectFeeFields() {
+    selectNoneFields();
+    ['name', 'total_fees', 'net_fees', 'paid_amount', 'balance_fees', 'fee_status'].forEach(field => {
+        const checkbox = document.getElementById('field' + field.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)).join(''));
+        if (checkbox) checkbox.checked = true;
+    });
+}
+
+// Export functions
+document.getElementById('exportExcel').onclick = function() {
+    if (validateForm()) {
+        document.getElementById('exportForm').action = "{{ url_for('export_excel') }}";
+        document.getElementById('exportForm').submit();
+    }
+};
+
+document.getElementById('exportPdf').onclick = function() {
+    if (validateForm()) {
+        document.getElementById('exportForm').action = "{{ url_for('export_pdf') }}";
+        document.getElementById('exportForm').submit();
+    }
+};
+
+function validateForm() {
+    const selectedFields = document.querySelectorAll('input[name="fields"]:checked');
+    if (selectedFields.length === 0) {
+        alert('Please select at least one field to export.');
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}
