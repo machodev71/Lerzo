@@ -1,8 +1,8 @@
-# Student Management System - SaaS Application
+# Student Management System - Production Ready SaaS Application
 
 ## Overview
 
-This is a Flask-based SaaS student management system designed for computer coaching centres. The application allows multiple coaching centres to register independently and manage their students, enquiries, courses, schemes, and fee payments. The system includes a subscription-based model with a 14-day free trial and monthly/yearly pricing plans.
+This is a production-ready Flask-based SaaS student management platform designed for computer coaching centres. The application features multi-tenant architecture, comprehensive subscription management with Razorpay Live integration, trial expiration locking, invoice generation, and complete student lifecycle management. The system is fully configured for deployment with security hardening, environment-based configuration, and professional error handling.
 
 ## User Preferences
 
@@ -108,9 +108,11 @@ The application uses SQLAlchemy with a declarative base model. Key entities incl
 - **Custom CSS**: Application-specific styling with dark mode support
 
 ### Payment Integration
-- **Razorpay**: Payment gateway integration (configured but implementation pending)
-- Subscription ID tracking for recurring payments
-- Payment callback handling for subscription activation
+- **Razorpay Live**: Fully integrated payment gateway with live credentials
+- **Subscription Plans**: Monthly (₹699) and Yearly (₹6999) with automatic billing
+- **Trial Management**: 14-day trial with automatic expiration locking
+- **Invoice System**: Professional PDF invoice generation and management
+- **Webhook Handling**: Automatic subscription activation via Razorpay webhooks
 
 ## Deployment Strategy
 
@@ -128,12 +130,33 @@ The application uses SQLAlchemy with a declarative base model. Key entities incl
 - **Database Connection Pooling**: Configured with pool recycling and ping
 
 ### Environment Variables Required
-- `DATABASE_URL`: Database connection string
-- `SESSION_SECRET`: Flask session encryption key
+- `DATABASE_URL`: PostgreSQL connection string (production database)
+- `SESSION_SECRET`: Flask session encryption key (strong random key)
+- `RAZORPAY_KEY_ID`: Live Razorpay API key ID
+- `RAZORPAY_KEY_SECRET`: Live Razorpay API key secret
+- `FLASK_ENV`: Environment setting (production/development)
+- `FLASK_DEBUG`: Debug mode flag (False for production)
 
 ### Database Management
 - SQLAlchemy models with proper relationships and cascading deletes
-- Database connection pooling with health checks
-- Migration-ready structure using SQLAlchemy's declarative base
+- Production PostgreSQL database with connection pooling
+- Enhanced connection pool configuration for high availability
+- Automatic table creation and schema management
 
-The application is designed to be easily deployable on cloud platforms with minimal configuration changes, supporting both SQLite for development and PostgreSQL for production environments.
+### Production Features
+- **Environment Configuration**: dotenv-based environment variable management
+- **Security Hardening**: CSRF protection, secure session cookies, password hashing
+- **Error Handling**: Professional 404/500 error pages with user-friendly messages
+- **Logging**: Environment-based logging levels (INFO for production, DEBUG for development)
+- **Deployment Ready**: Gunicorn configuration, Procfile, and deployment scripts
+- **File Management**: Secure upload handling with size limits and validation
+
+### Deployment Files
+- `.env` and `.env.example`: Environment configuration templates
+- `gunicorn.conf.py`: Production WSGI server configuration
+- `Procfile`: Platform deployment configuration
+- `deploy.sh`: Automated deployment preparation script
+- `README.md`: Comprehensive deployment and setup documentation
+- `.gitignore`: Security-focused file exclusion rules
+
+The application is production-ready and can be deployed on Heroku, Digital Ocean, AWS, GCP, or any platform supporting Python web applications. All security best practices are implemented including environment-based secrets, secure session management, and comprehensive error handling.
