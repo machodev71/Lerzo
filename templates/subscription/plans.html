@@ -136,16 +136,13 @@
                     <h4 class="mb-3">{{ current_user.get_subscription_status() }}</h4>
                     
                     {% if current_user.subscription_type == 'trial' %}
-                        {% set days_left = (current_user.trial_end_date - moment().utcnow()).days %}
                         <p class="text-muted">
                             Your trial expires on {{ current_user.trial_end_date.strftime('%d %B %Y') }}
                         </p>
-                        {% if days_left <= 3 %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Your trial is ending soon. Subscribe now to continue using all features.
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Choose a plan below to continue using all features after your trial ends.
                         </div>
-                        {% endif %}
                     {% elif current_user.subscription_end_date %}
                         <p class="text-muted">
                             Your subscription renews on {{ current_user.subscription_end_date.strftime('%d %B %Y') }}
