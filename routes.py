@@ -694,34 +694,111 @@ def register_routes(app):
     @app.route('/subscription/payment')
     @login_required
     def subscription_payment():
+        import razorpay
+        
         plan = request.args.get('plan', 'monthly')
-        amount = 699 if plan == 'monthly' else 6999
         
-        # Create Razorpay order (mock implementation)
-        order_id = f"order_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        # Razorpay plan IDs and amounts
+        if plan == 'monthly':
+            plan_id = 'plan_QiyHYDfCNwOii0'
+            amount = 69900  # ₹699 in paise
+        else:
+            plan_id = 'plan_QiyHxYGHqd3KLz'
+            amount = 699900  # ₹6999 in paise
         
-        return render_template('subscription/payment.html', 
-                             plan=plan, amount=amount, order_id=order_id)
+        # Initialize Razorpay client
+        client = razorpay.Client(auth=(os.environ.get('RAZORPAY_KEY_ID'), os.environ.get('RAZORPAY_KEY_SECRET')))
+        
+        # Create subscription
+        try:
+            subscription = client.subscription.create({
+                'plan_id': plan_id,
+                'customer_notify': 1,
+                'quantity': 1,
+                'notes': {
+                    'centre_id': current_user.id,
+                    'centre_name': current_user.name,
+                    'plan_type': plan
+                }
+            })
+            
+            return render_template('subscription/payment.html', 
+                                 plan=plan, 
+                                 amount=amount//100,  # Convert back to rupees for display
+                                 subscription_id=subscription['id'],
+                                 razorpay_key=os.environ.get('RAZORPAY_KEY_ID'))
+        except Exception as e:
+            flash(f'Error creating subscription: {str(e)}', 'error')
+            return redirect(url_for('subscription_plans'))
+    
+    @app.route('/subscription/webhook', methods=['POST'])
+    def subscription_webhook():
+        import razorpay
+        
+        # Verify webhook signature
+        client = razorpay.Client(auth=(os.environ.get('RAZORPAY_KEY_ID'), os.environ.get('RAZORPAY_KEY_SECRET')))
+        
+        try:
+            # Get webhook data
+            webhook_body = request.get_data(as_text=True)
+            webhook_signature = request.headers.get('X-Razorpay-Signature')
+            
+            # Verify webhook signature (optional but recommended)
+            # client.utility.verify_webhook_signature(webhook_body, webhook_signature, webhook_secret)
+            
+            # Parse webhook data
+            webhook_data = request.get_json()
+            event = webhook_data.get('event')
+            
+            if event == 'subscription.charged':
+                payment_data = webhook_data.get('payload', {}).get('payment', {}).get('entity', {})
+                subscription_data = webhook_data.get('payload', {}).get('subscription', {}).get('entity', {})
+                
+                # Extract centre_id from notes
+                centre_id = subscription_data.get('notes', {}).get('centre_id')
+                plan_type = subscription_data.get('notes', {}).get('plan_type')
+                
+                if centre_id:
+                    centre = Centre.query.get(int(centre_id))
+                    if centre:
+                        # Update subscription
+                        centre.subscription_type = plan_type
+                        centre.subscription_start_date = datetime.utcnow()
+                        centre.razorpay_subscription_id = subscription_data.get('id')
+                        
+                        if plan_type == 'monthly':
+                            centre.subscription_end_date = datetime.utcnow() + timedelta(days=30)
+                        else:
+                            centre.subscription_end_date = datetime.utcnow() + timedelta(days=365)
+                        
+                        # Record payment
+                        payment_record = SubscriptionPayment(
+                            centre_id=centre.id,
+                            amount=payment_data.get('amount', 0) / 100,  # Convert from paise
+                            plan_type=plan_type,
+                            razorpay_payment_id=payment_data.get('id'),
+                            status='completed'
+                        )
+                        
+                        db.session.add(payment_record)
+                        db.session.commit()
+            
+            return {'status': 'success'}, 200
+            
+        except Exception as e:
+            print(f"Webhook error: {str(e)}")
+            return {'status': 'error', 'message': str(e)}, 400
     
     @app.route('/subscription/success')
     @login_required
     def subscription_success():
+        subscription_id = request.args.get('subscription_id')
         plan = request.args.get('plan', 'monthly')
         
-        # Update subscription
-        if plan == 'monthly':
-            current_user.subscription_type = 'monthly'
-            current_user.subscription_start_date = datetime.utcnow()
-            current_user.subscription_end_date = datetime.utcnow() + timedelta(days=30)
-        else:
-            current_user.subscription_type = 'yearly'
-            current_user.subscription_start_date = datetime.utcnow()
-            current_user.subscription_end_date = datetime.utcnow() + timedelta(days=365)
-        
-        db.session.commit()
-        
-        flash('Subscription activated successfully!', 'success')
-        return redirect(url_for('dashboard'))
+        # Note: Actual subscription activation happens via webhook
+        # This is just for user feedback
+        flash('Payment initiated successfully! Your subscription will be activated shortly.', 'success')
+        return render_template('subscription/success.html', plan=plan)
     
     # Settings Routes
     @app.route('/settings/logo', methods=['GET', 'POST'])

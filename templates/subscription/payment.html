@@ -115,17 +115,15 @@ document.getElementById('payButton').onclick = function(e) {
     }
     
     var options = {
-        "key": "{{ razorpay_key_id or 'rzp_test_1DP5mmOlF5G5ag' }}", // Demo key
-        "amount": {{ amount * 100 }}, // Amount in paise
-        "currency": "INR",
+        "key": "{{ razorpay_key }}",
+        "subscription_id": "{{ subscription_id }}",
         "name": "Student Management System",
         "description": "{{ plan.title() }} Plan Subscription",
-        "order_id": "{{ order_id }}",
         "handler": function (response) {
             // On successful payment
             window.location.href = "{{ url_for('subscription_success', plan=plan) }}" + 
-                                 "?payment_id=" + response.razorpay_payment_id + 
-                                 "&order_id=" + response.razorpay_order_id + 
+                                 "?subscription_id={{ subscription_id }}" + 
+                                 "&payment_id=" + response.razorpay_payment_id + 
                                  "&signature=" + response.razorpay_signature;
         },
         "prefill": {
