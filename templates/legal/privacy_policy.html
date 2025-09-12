@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Privacy Policy</h1>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <section class="mb-5">
+                        <p class="text-muted">Last Updated: <span class="current-year"></span></p>
+                        <p><strong>Lerzo</strong> ("we", "our", or "us") is developed and maintained by <strong>Macho Dev LLP</strong>, a registered company. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our educational management software.</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">1. Information We Collect</h2>
+                        <p>We may collect the following types of information:</p>
+                        <ul>
+                            <li><strong>Personal Information:</strong> Name, email, phone number, institution details</li>
+                            <li><strong>Student Data:</strong> Enrollment information, academic records, payment details</li>
+                            <li><strong>Usage Data:</strong> IP addresses, browser type, pages visited</li>
+                            <li><strong>Cookies:</strong> Session cookies for authentication</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">2. How We Use Information</h2>
+                        <p>We use the collected information to:</p>
+                        <ul>
+                            <li>Provide and maintain our Service</li>
+                            <li>Process transactions and send receipts</li>
+                            <li>Notify you about changes to our Service</li>
+                            <li>Monitor usage and improve our Service</li>
+                            <li>Prevent fraud and enhance security</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">3. Data Protection</h2>
+                        <p>We implement strict security measures to protect your data, including:</p>
+                        <ul>
+                            <li>SSL encryption for all data transmissions</li>
+                            <li>Regular security audits</li>
+                            <li>Role-based access controls</li>
+                            <li>Secure payment processing through Razorpay</li>
+                        </ul>
+                        <p>All user data is safe in our hands. We take full responsibility for safeguarding your information.</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">4. Third-Party Services</h2>
+                        <p>We may employ third-party companies for:</p>
+                        <ul>
+                            <li>Payment processing (Razorpay)</li>
+                            <li>Cloud hosting services</li>
+                            <li>Analytics and performance monitoring</li>
+                        </ul>
+                        <p>These third parties are authorized only to perform these tasks on our behalf and are obligated to maintain confidentiality.</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">5. Data Retention</h2>
+                        <p>We retain personal data only for as long as necessary:</p>
+                        <ul>
+                            <li>Active accounts: Until a deletion request is made</li>
+                            <li>Financial records: 7 years for tax compliance</li>
+                            <li>Student records: As required by educational regulations</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">6. Your Rights</h2>
+                        <p>You have the right to:</p>
+                        <ul>
+                            <li>Access your personal data</li>
+                            <li>Request correction of inaccurate data</li>
+                            <li>Request deletion of your data</li>
+                            <li>Opt-out of marketing communications</li>
+                        </ul>
+                        <p>To exercise these rights, contact us at privacy@lerzo.in.</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 class="h4 mb-3">7. Children's Privacy</h2>
+                        <p>Our Service is intended for educational institutions and not directly to children under 13. We comply with:</p>
+                        <ul>
+                            <li>COPPA (Children's Online Privacy Protection Act)</li>
+                            <li>FERPA (Family Educational Rights and Privacy Act)</li>
+                            <li>GDPR (General Data Protection Regulation) where applicable</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 class="h4 mb-3">8. Changes to This Policy</h2>
+                        <p>We may change our Privacy Policy whenever we deem necessary. Any changes will be posted on this page. We encourage you to review this policy regularly to stay informed.</p>
+                    </section>
+
+                    <div class="mt-4">
+                        <h2 class="h4 mb-3">Contact Us</h2>
+                        <p>For any questions about this Privacy Policy, contact us at:</p>
+                        <address>
+                            <strong>Macho Dev LLP - Lerzo Support</strong><br>
+                            Email: machodev71@gmail.com<br>
+                            Phone: +91 72009 97988
+                        </address>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-update the current year
+document.addEventListener("DOMContentLoaded", function() {
+    const yearSpan = document.querySelector('.current-year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+});
+</script>
+{% endblock %}

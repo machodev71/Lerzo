@@ -1,80 +1,83 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Student Management System{% endblock %}
+{% block title %}Dashboard - Lerzo{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+    <h1 class="h3 mb-0" style="font-weight: 700; font-size: 32px; color: var(--apple-text-primary);">
+        <i class="fas fa-tachometer-alt me-3" style="color: var(--apple-blue);"></i>Dashboard
+    </h1>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('students_add') }}" class="btn btn-primary">
-            <i class="fas fa-user-plus me-1"></i>Add Student
+        <a href="{{ url_for('students_add') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus me-2"></i>Add Student
         </a>
-        <a href="{{ url_for('enquiries_add') }}" class="btn btn-outline-primary">
-            <i class="fas fa-user-plus me-1"></i>Add Enquiry
+        <a href="{{ url_for('enquiries_add') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-user-plus me-2"></i>Add Enquiry
         </a>
     </div>
 </div>
 
 <!-- Statistics Cards -->
 <div class="row mb-4">
-    <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card bg-primary text-white">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card bg-primary text-white border-0 shadow h-100 py-2">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title">Total Students</h6>
-                        <h3 class="mb-0">{{ total_students }}</h3>
+                        <h6 class="card-title text-uppercase" style="font-size: 14px; font-weight: 600; opacity: 0.9; margin-bottom: 8px;">Total Students</h6>
+                        <h3 class="mb-0" style="font-size: 28px; font-weight: 700;">{{ total_students }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-users fa-2x opacity-75"></i>
+                        <i class="fas fa-users" style="font-size: 32px; opacity: 0.8;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card bg-info text-white">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card bg-info text-white border-0 shadow h-100 py-2">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title">Total Enquiries</h6>
-                        <h3 class="mb-0">{{ total_enquiries }}</h3>
+                        <h6 class="card-title text-uppercase" style="font-size: 14px; font-weight: 600; opacity: 0.9; margin-bottom: 8px;">Total Enquiries</h6>
+                        <h3 class="mb-0" style="font-size: 28px; font-weight: 700;">{{ total_enquiries }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-user-plus fa-2x opacity-75"></i>
+                        <i class="fas fa-user-plus" style="font-size: 32px; opacity: 0.8;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title">Fees Collected</h6>
-                        <h3 class="mb-0">₹{{ "%.2f"|format(total_fees_collected) }}</h3>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-rupee-sign fa-2x opacity-75"></i>
-                    </div>
+  <div class="col-lg-3 col-md-6 mb-4">
+    <div class="card bg-success text-white border-0 shadow h-100 py-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="card-title text-uppercase" style="font-size: 14px; font-weight: 600; opacity: 0.9; margin-bottom: 8px;">Fees Collected</h6>
+                    <h3 class="mb-0" style="font-size: 28px; font-weight: 700;">₹{{ "%.2f"|format(total_fees_collected) }}</h3>
+                </div>
+                <div class="align-self-center">
+                    <span style="font-size: 32px; opacity: 0.8;">₹</span>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
     
-    <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card bg-warning text-white">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card bg-warning text-white border-0 shadow h-100 py-2">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title">Pending Fees</h6>
-                        <h3 class="mb-0">₹{{ "%.2f"|format(pending_fees) }}</h3>
+                        <h6 class="card-title text-uppercase" style="font-size: 14px; font-weight: 600; opacity: 0.9; margin-bottom: 8px;">Pending Fees</h6>
+                        <h3 class="mb-0" style="font-size: 28px; font-weight: 700;">₹{{ "%.2f"|format(pending_fees) }}</h3>
                     </div>
                     <div class="align-self-center">
-                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                        <i class="fas fa-clock" style="font-size: 32px; opacity: 0.8;"></i>
                     </div>
                 </div>
             </div>
@@ -85,28 +88,28 @@
 <!-- Fee Status Chart -->
 <div class="row mb-4">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Fee Status Overview</h5>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Fee Status Overview</h6>
             </div>
             <div class="card-body">
                 <div class="row text-center">
                     <div class="col-md-4">
                         <div class="p-3 border rounded bg-light-success">
                             <h4 class="text-success">{{ fully_paid }}</h4>
-                            <p class="mb-0">Fully Paid</p>
+                            <p class="mb-0 text-gray-600">Fully Paid</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3 border rounded bg-light-warning">
                             <h4 class="text-warning">{{ partially_paid }}</h4>
-                            <p class="mb-0">Partially Paid</p>
+                            <p class="mb-0 text-gray-600">Partially Paid</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3 border rounded bg-light-danger">
                             <h4 class="text-danger">{{ unpaid }}</h4>
-                            <p class="mb-0">Unpaid</p>
+                            <p class="mb-0 text-gray-600">Unpaid</p>
                         </div>
                     </div>
                 </div>
@@ -115,20 +118,20 @@
     </div>
     
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Quick Actions</h5>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="{{ url_for('students_list', fee_status='unpaid') }}" class="btn btn-outline-danger">
-                        <i class="fas fa-exclamation-triangle me-1"></i>View Unpaid Students
+                    <a href="{{ url_for('students_list', fee_status='unpaid') }}" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-exclamation-triangle me-2"></i>View Unpaid Students
                     </a>
-                    <a href="{{ url_for('students_list', fee_status='partial') }}" class="btn btn-outline-warning">
-                        <i class="fas fa-clock me-1"></i>View Partial Payments
+                    <a href="{{ url_for('students_list', fee_status='partial') }}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-clock me-2"></i>View Partial Payments
                     </a>
-                    <a href="{{ url_for('export_options') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-download me-1"></i>Export Data
+                    <a href="{{ url_for('export_options') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-download me-2"></i>Export Data
                     </a>
                 </div>
             </div>
@@ -139,9 +142,9 @@
 <!-- Recent Students and Enquiries -->
 <div class="row">
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Recent Students</h5>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Students</h6>
                 <a href="{{ url_for('students_list') }}" class="btn btn-sm btn-outline-primary">View All</a>
             </div>
             <div class="card-body">
@@ -183,9 +186,9 @@
     </div>
     
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Recent Enquiries</h5>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Enquiries</h6>
                 <a href="{{ url_for('enquiries_list') }}" class="btn btn-sm btn-outline-primary">View All</a>
             </div>
             <div class="card-body">
@@ -210,7 +213,7 @@
                                         <form method="POST" action="{{ url_for('enquiries_convert', id=enquiry.id) }}" class="d-inline">
                                             <button type="submit" class="btn btn-sm btn-success" 
                                                     onclick="return confirm('Convert this enquiry to student?')">
-                                                <i class="fas fa-user-check"></i>
+                                                <i class="fas fa-user-check me-2"></i>
                                             </button>
                                         </form>
                                     </td>

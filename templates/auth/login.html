@@ -1,57 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Student Management System{% endblock %}
+{% block title %}Login - Lerzo{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
-                    <h4 class="card-title">Student Management System</h4>
-                    <p class="text-muted">Login to your coaching centre</p>
-                </div>
-                
-                <form method="POST">
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="mb-3">
-                        {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control") }}
-                        {% if form.email.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.email.errors %}{{ error }}{% endfor %}
-                            </div>
-                        {% endif %}
+<!-- Dark Mode Toggle Button -->
+<button type="button" class="btn btn-outline-secondary position-fixed"
+        style="top: 20px; right: 20px; z-index: 1000;"
+        onclick="if(typeof toggleDarkMode === 'function') toggleDarkMode()"
+        data-bs-toggle="tooltip"
+        title="Toggle Dark Mode">
+    <i id="darkModeIcon" class="fas fa-moon"></i>
+</button>
+
+<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 400px; padding: 20px;">
+    <div class="card shadow p-4">
+        <div class="text-center mb-4">
+            <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+            <h4 class="card-title">Lerzo</h4>
+            <p class="text-muted">Login to your coaching centre</p>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                    
-                    <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control") }}
-                        {% if form.password.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.password.errors %}{{ error }}{% endfor %}
-                            </div>
-                        {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('auth_login') }}">
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}{{ error }}{% endfor %}
                     </div>
-                    
-                    <div class="mb-3 form-check">
-                        {{ form.remember_me(class="form-check-input") }}
-                        {{ form.remember_me.label(class="form-check-label") }}
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 mb-3">
-                        <i class="fas fa-sign-in-alt me-1"></i>Login
-                    </button>
-                </form>
-                
-                <div class="text-center">
-                    <p class="mb-0">Don't have an account? 
-                        <a href="{{ url_for('auth_register') }}" class="text-primary">Register here</a>
-                    </p>
-                </div>
+                {% endif %}
             </div>
+            
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+                {% if form.password.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.remember_me(class="form-check-input", checked=True) }}
+                {{ form.remember_me.label(class="form-check-label") }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 mb-3">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </button>
+        </form>
+        
+        <div class="text-center">
+            <p class="mb-0">Don't have an account?
+                <a href="{{ url_for('auth_register') }}" class="text-primary">Register here</a>
+            </p>
         </div>
     </div>
 </div>

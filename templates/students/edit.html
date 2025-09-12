@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Student - Student Management System{% endblock %}
+{% block title %}Edit Student - Lerzo{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -201,6 +201,24 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Batch Information -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.batch_id.label(class="form-label") }}
+                    {{ form.batch_id(class="form-select") }}
+                    {% if form.batch_id.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.batch_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="text-muted" id="batch-timing-display">
+                        {% if student.batch %}
+                            Current: {{ student.batch.start_time.strftime('%I:%M %p') }} - {{ student.batch.end_time.strftime('%I:%M %p') }}
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
             
             <hr>
             
@@ -254,6 +272,44 @@
                 </div>
             </div>
             
+            <!-- Initial Payment Section -->
+            <hr>
+            <h5 class="mb-3"><i class="fas fa-money-bill-wave me-2"></i>Initial Payment</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.initial_payment_amount.label(class="form-label") }}
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        {{ form.initial_payment_amount(class="form-control") }}
+                    </div>
+                    {% if form.initial_payment_amount.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.initial_payment_amount.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.initial_payment_date.label(class="form-label") }}
+                    {{ form.initial_payment_date(class="form-control") }}
+                    {% if form.initial_payment_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.initial_payment_date.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    {{ form.initial_payment_method.label(class="form-label") }}
+                    {{ form.initial_payment_method(class="form-select") }}
+                    {% if form.initial_payment_method.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.initial_payment_method.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
             <div class="d-flex justify-content-end gap-2">
                 <a href="{{ url_for('students_view', id=student.id) }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">
@@ -279,5 +335,30 @@ document.getElementById('concession').addEventListener('input', calculateNetFees
 
 // Calculate on page load
 calculateNetFees();
+
+// Update batch timing display when batch is selected
+document.addEventListener('DOMContentLoaded', function() {
+    const batchSelect = document.getElementById('batch_id');
+    if (batchSelect) {
+        batchSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.text.includes('(')) {
+                document.getElementById('batch-timing-display').textContent = 
+                    'Selected: ' + selectedOption.text.split('(')[1].split(')')[0];
+            } else {
+                document.getElementById('batch-timing-display').textContent = '';
+            }
+        });
+        
+        // Initialize display if a batch is already selected
+        if (batchSelect.selectedIndex > 0) {
+            const selectedOption = batchSelect.options[batchSelect.selectedIndex];
+            if (selectedOption.text.includes('(')) {
+                document.getElementById('batch-timing-display').textContent = 
+                    'Selected: ' + selectedOption.text.split('(')[1].split(')')[0];
+            }
+        }
+    }
+});
 </script>
 {% endblock %}

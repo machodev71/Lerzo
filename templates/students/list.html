@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Students - Student Management System{% endblock %}
+{% block title %}Students - Lerzo{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -16,21 +16,32 @@
         <form method="GET" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Fee Status</label>
-                <select name="fee_status" class="form-select" onchange="this.form.submit()">
+                <select name="fee_status" class="form-select">
                     <option value="all" {{ 'selected' if fee_status == 'all' else '' }}>All Students</option>
                     <option value="paid" {{ 'selected' if fee_status == 'paid' else '' }}>Fully Paid</option>
                     <option value="partial" {{ 'selected' if fee_status == 'partial' else '' }}>Partially Paid</option>
                     <option value="unpaid" {{ 'selected' if fee_status == 'unpaid' else '' }}>Unpaid</option>
                 </select>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
+                <label class="form-label">Batch</label>
+                <select name="batch_id" class="form-select">
+                    <option value="">All Batches</option>
+                    {% for batch in batches %}
+                    <option value="{{ batch.id }}" {{ 'selected' if batch_id == batch.id|string else '' }}>
+                        {{ batch.name }} ({{ batch.start_time.strftime('%I:%M %p') }} - {{ batch.end_time.strftime('%I:%M %p') }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
                 <label class="form-label">Search</label>
                 <input type="text" name="search" class="form-control" placeholder="Search by name, enrollment number, or mobile" 
-                       value="{{ search }}" onkeypress="if(event.keyCode==13) this.form.submit()">
+                       value="{{ search }}">
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-search"></i>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-filter me-1"></i>Filter
                 </button>
                 <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-times"></i>
@@ -51,6 +62,7 @@
                             <th>Enrollment No.</th>
                             <th>Name</th>
                             <th>Course</th>
+                            <th>Batch</th>
                             <th>Mobile</th>
                             <th>Fee Status</th>
                             <th>Balance</th>
@@ -70,6 +82,16 @@
                                 {% endif %}
                             </td>
                             <td>{{ student.course.name if student.course else '-' }}</td>
+                            <td>
+                                {% if student.batch %}
+                                    {{ student.batch.name }}<br>
+                                    <small class="text-muted">
+                                        {{ student.batch.start_time.strftime('%I:%M %p') }} - {{ student.batch.end_time.strftime('%I:%M %p') }}
+                                    </small>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ student.mobile1 }}</td>
                             <td>
                                 {% set status = student.get_fee_status() %}
@@ -92,9 +114,10 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     {% if student.get_balance_fees() > 0 %}
-                                    <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-outline-success" title="Pay Fees">
-                                        <i class="fas fa-rupee-sign"></i>
-                                    </a>
+                                   <a href="{{ url_for('pay_fees', id=student.id) }}" class="btn btn-outline-success" title="Pay Fees">
+    <span style="font-weight: bold; font-size: 16px;">₹</span>
+</a>
+
                                     {% endif %}
                                     <form method="POST" action="{{ url_for('students_delete', id=student.id) }}" class="d-inline">
                                         <button type="submit" class="btn btn-outline-danger" title="Delete"
@@ -116,13 +139,23 @@
                 <ul class="pagination justify-content-center">
                     {% if students.has_prev %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('students_list', page=students.prev_num, fee_status=fee_status, search=search) }}">Previous</a>
+                        <a class="page-link" href="{{ url_for('students_list', page=students.prev_num, fee_status=fee_status, batch_id=batch_id, search=search) }}">Previous</a>
                     </li>
                     {% endif %}
                     
+                    {% for page_num in students.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if students.page == page_num %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('students_list', page=page_num, fee_status=fee_status, batch_id=batch_id, search=search) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
                     {% if students.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('students_list', page=students.next_num, fee_status=fee_status, search=search) }}">Next</a>
+                        <a class="page-link" href="{{ url_for('students_list', page=students.next_num, fee_status=fee_status, batch_id=batch_id, search=search) }}">Next</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -132,10 +165,21 @@
             <div class="text-center py-5">
                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">No students found</h5>
-                <p class="text-muted">Add your first student to get started</p>
+                <p class="text-muted">
+                    {% if fee_status or batch_id or search %}
+                        Try changing your filters
+                    {% else %}
+                        Add your first student to get started
+                    {% endif %}
+                </p>
                 <a href="{{ url_for('students_add') }}" class="btn btn-primary">
                     <i class="fas fa-user-plus me-1"></i>Add Student
                 </a>
+                {% if fee_status or batch_id or search %}
+                <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-times me-1"></i>Clear Filters
+                </a>
+                {% endif %}
             </div>
         {% endif %}
     </div>

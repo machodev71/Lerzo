@@ -93,7 +93,7 @@ class Student(db.Model):
     age = db.Column(db.Integer)
     date_of_birth = db.Column(db.Date)
     date_of_joining = db.Column(db.Date, nullable=False)
-    
+    batch_id = db.Column(db.Integer, db.ForeignKey('batches.id'))
     # Contact Information
     mobile1 = db.Column(db.String(15), nullable=False)
     mobile2 = db.Column(db.String(15))
@@ -198,3 +198,17 @@ class SubscriptionPayment(db.Model):
     status = db.Column(db.String(20), default='pending')  # pending, completed, failed
     
     centre = db.relationship('Centre', backref='subscription_payments')
+
+
+class Batch(db.Model):
+    __tablename__ = 'batches'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # e.g., "Morning Batch"
+    start_time = db.Column(db.Time, nullable=False)   # e.g., 09:00:00
+    end_time = db.Column(db.Time, nullable=False)     # e.g., 11:00:00
+    centre_id = db.Column(db.Integer, db.ForeignKey('centres.id'), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    # Relationship
+    students = db.relationship('Student', backref='batch', lazy=True)

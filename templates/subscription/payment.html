@@ -1,153 +1,106 @@
 {% extends "base.html" %}
 
-{% block title %}Payment - Student Management System{% endblock %}
+{% block title %}Complete Payment - Lerzo{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
+<div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4 class="card-title mb-0">Complete Your Payment</h4>
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-credit-card me-2"></i>Complete Your Payment</h4>
                 </div>
+                
                 <div class="card-body">
-                    <!-- Plan Summary -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        {{ plan.title() }} Plan
-                                        {% if plan == 'yearly' %}
-                                            <span class="badge bg-success ms-2">Save 17%</span>
-                                        {% endif %}
-                                    </h5>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <p class="mb-1"><strong>Amount:</strong></p>
-                                            <h4 class="text-primary">₹{{ amount }}</h4>
-                                        </div>
-                                        <div class="col-6">
-                                            <p class="mb-1"><strong>Billing:</strong></p>
-                                            <p class="mb-0">{{ 'Yearly' if plan == 'yearly' else 'Monthly' }}</p>
-                                        </div>
-                                    </div>
-                                    {% if plan == 'yearly' %}
-                                    <div class="mt-2">
-                                        <small class="text-success">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            You save ₹1,389 compared to monthly billing!
-                                        </small>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">{{ plan['display_name'] }}</h5>
+                        <p>
+                            <strong>Amount:</strong> ₹{{ plan['amount_display'] }}<br>
+                            <strong>Billing Cycle:</strong> {{ plan['duration'] }}
+                        </p>
+                        {% if plan_type == 'yearly' %}
+                        <p class="mb-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            You're saving ₹1,389 compared to monthly payments!
+                        </p>
+                        {% endif %}
                     </div>
                     
-                    <!-- Payment Form -->
                     <form id="paymentForm">
                         <div class="mb-3">
                             <label class="form-label">Payment Method</label>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card border-primary">
-                                        <div class="card-body text-center">
-                                            <i class="fab fa-cc-visa fa-2x text-primary me-2"></i>
-                                            <i class="fab fa-cc-mastercard fa-2x text-warning me-2"></i>
-                                            <i class="fas fa-university fa-2x text-success me-2"></i>
-                                            <i class="fas fa-mobile-alt fa-2x text-info"></i>
-                                            <p class="mt-2 mb-0">Secure payment via Razorpay</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="border p-3 text-center rounded">
+                                <i class="fab fa-cc-visa fa-2x me-2 text-primary"></i>
+                                <i class="fab fa-cc-mastercard fa-2x me-2 text-danger"></i>
+                                <i class="fab fa-cc-amex fa-2x me-2 text-info"></i>
+                                <i class="fas fa-university fa-2x me-2 text-success"></i>
+                                <p class="mt-2 mb-0 text-muted">Secure payment via Razorpay</p>
                             </div>
                         </div>
                         
-                        <!-- Terms and Conditions -->
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                                <label class="form-check-label" for="agreeTerms">
-                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and 
-                                    <a href="#" target="_blank">Privacy Policy</a>
-                                </label>
-                            </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="termsCheck" required>
+                           <label class="form-check-label" for="termsCheck">
+    I agree to the 
+    <a target="_blank" rel="noopener noreferrer" href="{{ url_for('terms_of_service') }}">Terms of Service</a>
+    and 
+    <a target="_blank" rel="noopener noreferrer" href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+</label>
+
+
                         </div>
                         
-                        <!-- Payment Buttons -->
-                        <div class="d-grid gap-2">
-                            <button type="button" id="payButton" class="btn btn-primary btn-lg">
-                                <i class="fas fa-lock me-2"></i>
-                                Pay ₹{{ amount }} Securely
-                            </button>
-                            <a href="{{ url_for('subscription_plans') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>
-                                Back to Plans
-                            </a>
-                        </div>
+                        <button type="button" id="rzp-button" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-lock me-2"></i> Pay Securely ₹{{ plan['amount_display'] }}
+                        </button>
                     </form>
-                    
-                    <!-- Security Notice -->
-                    <div class="mt-4 text-center">
-                        <small class="text-muted">
-                            <i class="fas fa-shield-alt me-1"></i>
-                            Your payment information is encrypted and secure. We do not store your card details.
-                        </small>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Razorpay Script -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
 <script>
-document.getElementById('payButton').onclick = function(e) {
-    e.preventDefault();
-    
-    // Check if terms are agreed
-    if (!document.getElementById('agreeTerms').checked) {
-        alert('Please agree to the terms and conditions');
-        return;
-    }
-    
     var options = {
         "key": "{{ razorpay_key }}",
-        "subscription_id": "{{ subscription_id }}",
-        "name": "Student Management System",
-        "description": "{{ plan.title() }} Plan Subscription",
+        "subscription_id": "{{ subscription.id }}",
+        "name": "Lerzo",
+        "description": "{{ plan['display_name'] }} Subscription",
+        "image": "{% if current_user.logo_filename %}{{ url_for('static', filename='uploads/' + current_user.logo_filename) }}{% endif %}",
         "handler": function (response) {
-            // On successful payment
-            window.location.href = "{{ url_for('subscription_success', plan=plan) }}" + 
-                                 "?subscription_id={{ subscription_id }}" + 
-                                 "&payment_id=" + response.razorpay_payment_id + 
-                                 "&signature=" + response.razorpay_signature;
+            window.location.href = "{{ url_for('subscription_success') }}?payment_id=" + 
+                                 response.razorpay_payment_id + 
+                                 "&subscription_id={{ subscription.id }}" +
+                                 "&plan={{ plan_type }}";
         },
         "prefill": {
             "name": "{{ current_user.name }}",
             "email": "{{ current_user.email }}",
             "contact": "{{ current_user.phone or '' }}"
         },
+        "notes": {
+            "centre_id": "{{ current_user.id }}",
+            "plan_type": "{{ plan_type }}"
+        },
         "theme": {
             "color": "#0d6efd"
-        },
-        "modal": {
-            "ondismiss": function() {
-                // Payment cancelled
-                console.log('Payment cancelled');
-            }
         }
     };
     
     var rzp = new Razorpay(options);
-    rzp.on('payment.failed', function (response) {
-        alert('Payment failed: ' + response.error.description);
-    });
     
-    rzp.open();
-};
+    document.getElementById('rzp-button').onclick = function(e){
+        if(!document.getElementById('termsCheck').checked) {
+            alert('Please agree to the terms and conditions');
+            return;
+        }
+        rzp.open();
+        e.preventDefault();
+    }
+    
+    rzp.on('payment.failed', function (response){
+        alert('Payment failed. Please try again. Error: ' + response.error.description);
+    });
 </script>
 {% endblock %}

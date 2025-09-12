@@ -2,33 +2,43 @@
 
 // Dark Mode Toggle
 function toggleDarkMode() {
-    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    document.documentElement.setAttribute('data-bs-theme', newTheme);
-    
-    // Update icon
-    const icon = document.getElementById('darkModeIcon');
-    if (icon) {
-        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    try {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-bs-theme', newTheme);
+        
+        // Update icon - with null check
+        const icon = document.getElementById('darkModeIcon');
+        if (icon && icon.classList) {
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        // Save preference
+        localStorage.setItem('theme', newTheme);
+    } catch (error) {
+        console.log('Dark mode toggle error:', error);
     }
-    
-    // Save preference
-    localStorage.setItem('theme', newTheme);
 }
 
 // Initialize Dark Mode
 function initializeDarkMode() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-    
-    document.documentElement.setAttribute('data-bs-theme', theme);
-    
-    // Update icon
-    const icon = document.getElementById('darkModeIcon');
-    if (icon) {
-        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    try {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        
+        // Update icon - with null check
+        const icon = document.getElementById('darkModeIcon');
+        if (icon && icon.classList) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    } catch (error) {
+        console.log('Dark mode initialization error:', error);
+        // Set default theme if there's an error
+        document.documentElement.setAttribute('data-bs-theme', 'light');
     }
 }
 
@@ -358,36 +368,56 @@ function printElement(elementId) {
 
 // Initialize all functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    initializeDarkMode();
-    initializeUppercaseInputs();
-    initializeFormValidation();
-    initializeNumberFormatting();
-    initializeMobileValidation();
-    initializeAutoSave();
-    initializeSearchEnhancements();
-    initializeConfirmDialogs();
-    initializeTableEnhancements();
-    initializeKeyboardShortcuts();
-    
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    
-    // Initialize popovers
-    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
-    });
-    
-    console.log('Student Management System initialized successfully');
+    try {
+        initializeDarkMode();
+        initializeUppercaseInputs();
+        initializeFormValidation();
+        initializeNumberFormatting();
+        initializeMobileValidation();
+        initializeAutoSave();
+        initializeSearchEnhancements();
+        initializeConfirmDialogs();
+        initializeTableEnhancements();
+        initializeKeyboardShortcuts();
+        
+        // Initialize tooltips - with null check
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        if (tooltipTriggerList.length > 0 && typeof bootstrap !== 'undefined') {
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+        
+        // Initialize popovers - with null check
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        if (popoverTriggerList.length > 0 && typeof bootstrap !== 'undefined') {
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        }
+        
+        console.log('Student Management System initialized successfully');
+    } catch (error) {
+        console.error('Initialization error:', error);
+        // Don't show notification for initialization errors
+    }
 });
 
 // Error Handling
 window.addEventListener('error', function(e) {
     console.error('JavaScript Error:', e.error);
-    showNotification('An error occurred. Please refresh the page.', 'danger');
+    
+    // Don't show notifications for common initialization errors
+    const errorMessage = e.error ? e.error.message : '';
+    const isInitializationError = errorMessage.includes('Cannot read properties of null') ||
+                                 errorMessage.includes('Cannot read property') ||
+                                 errorMessage.includes('is not defined') ||
+                                 errorMessage.includes('classList');
+    
+    // Only show notification for unexpected errors, not initialization issues
+    if (!isInitializationError) {
+        showNotification('An error occurred. Please refresh the page.', 'danger');
+    }
 });
 
 // Export functions for global use

@@ -1,0 +1,22 @@
+{
+  "event": "subscription.charged",
+  "payload": {
+    "subscription": {
+      "entity": {
+        "id": "sub_R5CesSOL5EBBHV",
+        "plan_id": "plan_QiyHYDfCNwOii0",
+        "status": "active",
+        "notes": {
+          "centre_id": "1"
+        }
+      }
+    },
+    "payment": {
+      "entity": {
+        "id": "pay_Test123",
+        "amount": 69900,
+        "status": "captured"
+      }
+    }
+  }
+}

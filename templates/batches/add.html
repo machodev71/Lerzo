@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Add Batch - Lerzo{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-clock me-2"></i>Add Batch</h2>
+    <a href="{{ url_for('batches_list') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to Batches
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control", placeholder="e.g. Morning Batch") }}
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.name.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Status</label>
+                    <div class="form-check form-switch">
+                        {{ form.is_active(class="form-check-input", checked="checked") }}
+                        {{ form.is_active.label(class="form-check-label") }}
+                    </div>
+                    <small class="text-muted">Active batches will be available for student enrollment</small>
+                    {% if form.is_active.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.is_active.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.start_time.label(class="form-label") }}
+                    {{ form.start_time(class="form-control", placeholder="HH:MM (24-hour format)", id="start_time") }}
+                    {% if form.start_time.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.start_time.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="text-muted">Example: 09:00 for 9 AM, 14:30 for 2:30 PM</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form.end_time.label(class="form-label") }}
+                    {{ form.end_time(class="form-control", placeholder="HH:MM (24-hour format)", id="end_time") }}
+                    {% if form.end_time.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.end_time.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="text-muted">Example: 11:00 for 11 AM, 16:30 for 4:30 PM</small>
+                </div>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="alert alert-light border" id="batch-preview" style="display: none;">
+                        <h6><i class="fas fa-eye me-2"></i>Batch Preview</h6>
+                        <div id="preview-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('batches_list') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>Save Batch
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Time input formatting
+    const timeInputs = document.querySelectorAll('input[placeholder*="HH:MM"]');
+    const startTimeInput = document.getElementById('start_time');
+    const endTimeInput = document.getElementById('end_time');
+    const batchNameInput = document.getElementById('name');
+    const isActiveInput = document.getElementById('is_active');
+    const previewDiv = document.getElementById('batch-preview');
+    const previewContent = document.getElementById('preview-content');
+    
+    // Auto-format time inputs
+    timeInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value && !value.includes(':')) {
+                if (value.length >= 3) {
+                    const hours = value.slice(0, 2).padStart(2, '0');
+                    const minutes = value.slice(2, 4).padStart(2, '0');
+                    this.value = `${hours}:${minutes}`;
+                }
+            }
+            updatePreview();
+        });
+        
+        input.addEventListener('input', updatePreview);
+    });
+    
+    // Update preview when other fields change
+    if (batchNameInput) batchNameInput.addEventListener('input', updatePreview);
+    if (isActiveInput) isActiveInput.addEventListener('change', updatePreview);
+    
+    // Time validation
+    function validateTimes() {
+        const startTime = startTimeInput.value;
+        const endTime = endTimeInput.value;
+        
+        if (startTime && endTime) {
+            const start = new Date(`2000-01-01T${startTime}:00`);
+            const end = new Date(`2000-01-01T${endTime}:00`);
+            
+            if (start >= end) {
+                endTimeInput.setCustomValidity('End time must be after start time');
+                return false;
+            } else {
+                endTimeInput.setCustomValidity('');
+                return true;
+            }
+        }
+        return true;
+    }
+    
+    // Convert 24-hour to 12-hour format
+    function formatTime12Hour(time24) {
+        if (!time24) return '';
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minutes} ${ampm}`;
+    }
+    
+    // Update preview
+    function updatePreview() {
+        const name = batchNameInput.value.trim();
+        const startTime = startTimeInput.value;
+        const endTime = endTimeInput.value;
+        const isActive = isActiveInput.checked;
+        
+        if (name || startTime || endTime) {
+            const statusBadge = isActive ? 
+                '<span class="badge bg-success">Active</span>' : 
+                '<span class="badge bg-secondary">Inactive</span>';
+                
+            const timeDisplay = startTime && endTime ? 
+                `${formatTime12Hour(startTime)} - ${formatTime12Hour(endTime)}` : 
+                'Time not set';
+                
+            previewContent.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${name || 'Batch Name'}</strong>
+                        <div class="text-muted small">${timeDisplay}</div>
+                    </div>
+                    <div>${statusBadge}</div>
+                </div>
+            `;
+            previewDiv.style.display = 'block';
+        } else {
+            previewDiv.style.display = 'none';
+        }
+        
+        validateTimes();
+    }
+    
+    // Form submission validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!validateTimes()) {
+            e.preventDefault();
+            alert('Please ensure the end time is after the start time.');
+        }
+    });
+    
+    // Initialize preview
+    updatePreview();
+});
+</script>
+{% endblock %}
