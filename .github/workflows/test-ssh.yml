@@ -1,0 +1,28 @@
+name: Test SSH Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ssh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Debug info
+        run: |
+          echo "Runner: $(uname -a)"
+          echo "GitHub Ref: $GITHUB_REF"
+
+      - name: Test SSH with appleboy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          timeout: 30s
+          script: |
+            echo "✅ Connected to VPS successfully!"
+            whoami
+            hostname
+            uptime
