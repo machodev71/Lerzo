@@ -3,21 +3,15 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main
+      - main   # Trigger deploy only on main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Debug secrets
-        run: |
-          echo "VPS_HOST=${{ secrets.VPS_HOST }}"
-          echo "VPS_USER=${{ secrets.VPS_USER }}"
-          echo "SSH Key length: $(echo "${{ secrets.VPS_SSH_KEY }}" | wc -c)"
 
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -26,11 +20,13 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
+          timeout: 30s
           script: |
-            echo "✅ Connected to VPS: $(hostname)"
+            echo "✅ Connected to VPS successfully!"
             cd /home/ubuntu/loza/TaskMasterPro
             git reset --hard
             git pull origin main
             source venv/bin/activate
             pip install -r requirements.txt
             sudo systemctl restart gunicorn
+
