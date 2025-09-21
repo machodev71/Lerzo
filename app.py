@@ -228,11 +228,11 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.logger.info(f"Starting Student Management System on {os.environ.get('HOST', '0.0.0.0')}:{os.environ.get('PORT', 5000)}")
+    app.logger.info(f"Starting Student Management System on {os.environ.get('HOST', '0.0.0.0')}:{os.environ.get('PORT', 8000}")
     app.logger.info(f"Environment: {app.config['ENV']}")
     app.logger.info(f"Debug mode: {app.debug}")
     app.run(
         host=os.environ.get('HOST', '0.0.0.0'),
-        port=int(os.environ.get('PORT', 5000)),
+        port=int(os.environ.get('PORT', 8000)),
         debug=(app.config['ENV'] == 'development')
     )
