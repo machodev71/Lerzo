@@ -10,6 +10,10 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
 
+from dotenv import load_dotenv
+load_dotenv()  # loads .env variables
+
+
 # Load environment variables
 load_dotenv()
 
